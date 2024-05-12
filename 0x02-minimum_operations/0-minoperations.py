@@ -6,18 +6,22 @@ def minOperations(n):
     """calculates the fewest number of operations needed
     to result in exactly n H characters in the file.
     """
-    if n <= 1:
+    if not isinstance(n, int):
         return 0
+    ops_count = 0
+    clipboard = 0
+    done = 1
 
-    operations = 0
-    clipboard = 1
-
-    n -= 1
-
-    # greed
-    for i in range(2, n + 1):
-        while n % i == 0:
-            n //= i
-            operations += clipboard
-            clipboard = i
-    return operations
+    while done < n:
+        if clipboard == 0:
+            clipboard = done
+            done += clipboard
+            ops_count += 2
+        elif n - done > 0 and (n - done) % done == 0:
+            clipboard = done
+            done += clipboard
+            ops_count += 2
+        elif clipboard > 0:
+            done += clipboard
+            ops_count += 1
+    return ops_count

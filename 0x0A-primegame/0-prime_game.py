@@ -2,56 +2,22 @@
 """Prime Game"""
 
 
-def sieve(n):
-    is_prime = [True] * (n + 1)
-    p = 2
-    while (p * p <= n):
-        if is_prime[p]:
-            for i in range(p * p, n + 1, p):
-                is_prime[i] = False
-        p += 1
-    is_prime[0], is_prime[1] = False, False
-    primes = []
-    for p in range(n + 1):
-        if is_prime[p]:
-            primes.append(p)
-    return primes
-
 def isWinner(x, nums):
     if x < 1 or not nums:
         return None
-
-    max_n = max(nums)
-    primes = sieve(max_n)
-    prime_set = set(primes)
-
-    maria_wins = 0
-    ben_wins = 0
-
-    for n in nums:
-        if n < 2:
-            ben_wins += 1
+    marias_wins, bens_wins = 0, 0
+    n = max(nums)
+    primes = [True for _ in range(1, n + 1, 1)]
+    primes[0] = False
+    for i, is_prime in enumerate(primes, 1):
+        if i == 1 or not is_prime:
             continue
-
-        available = list(range(1, n + 1))
-        moves = 0
-        for p in primes:
-            if p > n:
-                break
-            if p in available:
-                moves += 1
-                for multiple in range(p, n + 1, p):
-                    if multiple in available:
-                        available.remove(multiple)
-
-        if moves % 2 == 1:
-            maria_wins += 1
-        else:
-            ben_wins += 1
-
-    if maria_wins > ben_wins:
-        return 'Maria'
-    elif ben_wins > maria_wins:
-        return 'Ben'
-    else:
+        for j in range(i + i, n + 1, i):
+            primes[j - 1] = False
+    for _, n in zip(range(x), nums):
+        primes_count = len(list(filter(lambda x: x, primes[0: n])))
+        bens_wins += primes_count % 2 == 0
+        marias_wins += primes_count % 2 == 1
+    if marias_wins == bens_wins:
         return None
+    return 'Maria' if marias_wins > bens_wins else 'Ben'
